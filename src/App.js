@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { ReactMic } from 'react-mic'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+
+  state = {
+    recordStatus: false,
+    recordData: null,
+  }
+
+  onSetRecord (recordStatus) {
+    this.setState({
+      ...this.state,
+      recordStatus
+    })
+  }
+
+  onRecord(recordData){
+    console.log(recordData)
+  }
+
+  onStop(data){
+    console.log(data)
+    this.setState({
+      ...this.state,
+      recordData: data
+    },()=>console.log(this.state))
+  }
+
+  render(){
+    return (
+      <div>
+        <ReactMic
+          record={this.state.recordStatus} 
+          visualSetting="frequencyBars"
+          mimeType="audio/webm"
+          onData={this.onRecord}
+          onStop={(data)=>this.onStop(data)}
+          bitRate={256000} 
+          sampleRate={96000} 
+          timeSlice={3000}
+        />
+        <button onClick={()=>this.onSetRecord(!this.state.recordStatus)}>Start/Stop Record</button>
+        <audio
+          src={this.state.recordData === null ? null : this.state.recordData.blobURL}
+          controls
+        ></audio>
+      </div>
+    );
+  }
 }
 
 export default App;
